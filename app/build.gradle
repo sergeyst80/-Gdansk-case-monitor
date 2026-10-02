@@ -1,0 +1,55 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'pl.sergeyst.gdanskmonitor'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'pl.sergeyst.gdanskmonitor'
+        minSdk 26
+        targetSdk 36
+        versionCode 7
+        versionName '1.2.1'
+    }
+
+    bundle {
+        language { enableSplit = false }
+    }
+
+    signingConfigs {
+        release {
+            def keyFile = rootProject.file('.secrets/release-signing.p12')
+            def passwordFile = rootProject.file('.secrets/release-storepass')
+            if (keyFile.exists() && passwordFile.exists()) {
+                storeFile keyFile
+                storeType 'PKCS12'
+                storePassword passwordFile.getText('UTF-8').trim()
+                keyAlias 'gdansk-case-monitor'
+                keyPassword storePassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+
+    dependencies {
+        implementation 'androidx.work:work-runtime:2.12.0'
+        implementation 'com.google.mlkit:translate:17.0.3'
+        implementation 'com.google.mlkit:language-id:17.0.6'
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.json:json:20240303'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

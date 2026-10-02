@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <!-- The portal currently serves the wrong intermediate certificate.
+         Trust its verified public issuing CA only for this exact hostname. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">klient.gdansk.uw.gov.pl</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/certum_dv_tls_g2_r39" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
