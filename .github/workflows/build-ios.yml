@@ -1,0 +1,33 @@
+name: Check iPhone project (unsigned simulator)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate project structure
+        run: python3 ios/tools/validate_project.py
+      - name: Ensure CocoaPods is installed
+        run: command -v pod || brew install cocoapods
+      - name: Compile for simulator without signing
+        run: bash ios/tools/build_macos.sh simulator
+      - name: Select an available iPhone simulator
+        run: |
+          simulator_id=$(xcrun simctl list devices available --json | python3 -c 'import json,sys; devices=json.load(sys.stdin)["devices"]; matches=[d["udid"] for runtime, items in devices.items() if ".iOS-" in runtime for d in items if d.get("isAvailable") and "iPhone" in d["name"]]; assert matches, "No available iPhone simulator"; print(matches[0])')
+          echo "SIMULATOR_ID=$simulator_id" >> "$GITHUB_ENV"
+      - name: Run XCTest on simulator
+        run: bash ios/tools/build_macos.sh test
+      - name: Save test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-test-results
+          path: ios/build/DerivedData/Logs/Test/*.xcresult
+          if-no-files-found: ignore

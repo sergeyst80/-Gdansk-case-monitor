@@ -1,0 +1,14 @@
+Pods/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.ipa
+*.p12
+*.mobileprovision
+.secrets/
+*.xcarchive/
+*.cer
+*.key
+ExportOptions.local.plist
+Signing.local.xcconfig

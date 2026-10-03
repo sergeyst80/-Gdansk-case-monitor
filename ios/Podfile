@@ -1,0 +1,9 @@
+platform :ios, '17.0'
+use_frameworks!
+
+target 'GdanskCaseMonitor' do
+  pod 'GoogleMLKit/Translate', '8.0.0'
+  target 'GdanskCaseMonitorTests' do
+    inherit! :search_paths
+  end
+end

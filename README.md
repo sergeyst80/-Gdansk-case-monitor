@@ -1,5 +1,20 @@
 # Gdańsk Case Monitor for Android
 
+## iPhone / iOS
+
+Нативный iPhone/iPad-проект (iOS 17+) находится в папке
+[ios/](https://github.com/sergeyst80/-Gdansk-case-monitor/tree/main/ios).
+Внутри — Xcode-проект, CocoaPods, локальный ML Kit-перевод, 12 языков,
+Keychain, изолированные сессии WebView, тесты и команды сборки на Mac.
+Инструкция: [ios/README.md](https://github.com/sergeyst80/-Gdansk-case-monitor/blob/main/ios/README.md).
+
+На Linux проходят 9 структурных проверок. Swift-код ещё не компилировался,
+XCTest не запускался; готового подписанного IPA нет. Для проверки на macOS
+в Actions добавлен ручной workflow **Check iPhone project (unsigned simulator)**.
+Он не использует Apple-ключи и не выпускает IPA. Для установки на iPhone
+выберите свою команду подписи в Xcode; пароль Apple ID не хранится в проекте.
+
+
 Самостоятельное Android-приложение для нескольких учетных записей `https://klient.gdansk.uw.gov.pl/`.
 
 Актуальный релиз: **1.2.1**, Android 8.0+. Установка:
