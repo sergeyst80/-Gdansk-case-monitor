@@ -1,68 +1,77 @@
 # Gdańsk Case Monitor
 
-Приложение для проверки статуса дел нескольких учетных записей на портале
+[English](README.md) · [Русский](README_RU.md)
+
+An application for checking case status for multiple accounts on
 `https://klient.gdansk.uw.gov.pl/`.
 
-В этом репозитории представлены две версии:
+This repository contains two versions:
 
-- **Android 8.0+** — исходный проект в корне репозитория и готовый подписанный
-  APK версии **1.2.1** в папке [release/](release/).
-- **iPhone / iPad, iOS 17+** — отдельный исходный проект в папке [ios/](ios/).
-  Подготовлен для сборки на Mac; компиляция ещё не подтверждена, готового IPA нет.
+- **Android 8.0+** — source project in the repository root and a signed
+  **1.2.1** APK in [release/](release/).
+- **iPhone / iPad, iOS 17+** — a separate source project in [ios/](ios/).
+  Prepared for building on a Mac; compilation has not yet been verified,
+  and no installable IPA is available.
 
-## Android: установка
+## Android: installation
 
-Самостоятельное Android-приложение для нескольких учетных записей портала.
+A standalone Android application supporting multiple portal accounts.
 
-Актуальный релиз: **1.2.1**, Android 8.0+. Установка:
+Current release: **1.2.1**, requiring Android 8.0 or later. Download:
 [release/GdanskCaseMonitor-1.2.1.apk](release/GdanskCaseMonitor-1.2.1.apk).
-Контрольные суммы: [release/SHA256SUMS](release/SHA256SUMS).
-Устанавливайте поверх прежней release-версии, не удаляя приложение:
-ключ подписи и формат зашифрованных данных сохранены.
+Checksums: [release/SHA256SUMS](release/SHA256SUMS).
+Install over the previous release without uninstalling the application:
+the signing key and encrypted data format have been preserved.
 
-## iPhone / iOS: проект и сборка
+## iPhone / iOS: project and build
 
-В папке [ios/](ios/) находятся Xcode-проект, CocoaPods, локальный ML Kit-перевод,
-12 языков, Keychain, изолированные сессии WebView, тесты и команды сборки на Mac.
-Необходимые инструменты, инструкции сборки и руководство:
+The [ios/](ios/) folder contains an Xcode project, CocoaPods configuration,
+on-device ML Kit translation, 12 interface languages, Keychain storage,
+isolated WebView sessions, tests, and Mac build commands.
+Required tools, build instructions, and the user guide (currently in Russian):
 [ios/README.md](ios/README.md).
 
-На Linux проходят 9 структурных проверок. Swift-код ещё не компилировался,
-XCTest не запускался; готового подписанного IPA нет. Для проверки на macOS
-в Actions добавлен ручной workflow **Check iPhone project (unsigned simulator)**.
-Он не использует Apple-ключи и не выпускает IPA. Для установки на iPhone
-выберите свою команду подписи в Xcode; пароль Apple ID не хранится в проекте.
+Nine structural checks pass on Linux. Swift code has not yet been compiled,
+XCTest has not been run, and no signed IPA is available. Actions includes
+a manual **Check iPhone project (unsigned simulator)** workflow for macOS.
+It does not use Apple signing keys or export an IPA. To install on an iPhone,
+select your signing team in Xcode; no Apple Account password is stored in the project.
 
-Далее описаны руководства, реализация и сборка **Android-версии**.
-Особенности iOS описаны отдельно в её README.
+The following sections cover guides, implementation, and builds for the
+**Android version**. iOS-specific details are documented in its own README.
 
-## Android: руководство пользователя / User guide
+## Android: user guides
 
 - [English — illustrated guide for version 1.2.1](docs/USER_GUIDE_EN.md)
-- [Русский — иллюстрированное руководство для версии 1.2.1](docs/USER_GUIDE_RU.md)
-- PDF: [English](docs/USER_GUIDE_EN.pdf) · [Русский](docs/USER_GUIDE_RU.pdf)
+- [Russian — illustrated guide for version 1.2.1](docs/USER_GUIDE_RU.md)
+- PDF: [English](docs/USER_GUIDE_EN.pdf) · [Russian](docs/USER_GUIDE_RU.pdf)
 
-Для повторного экспорта PDF нужны Chromium и `markdown-it` 14.1.0:
-`node tools/export_guides.cjs /путь/к/node_modules/markdown-it`.
-Экспорт выполняется локально, без обращения к порталу или использования секретов.
+Re-exporting the PDFs requires Chromium and `markdown-it` 14.1.0:
+`node tools/export_guides.cjs /path/to/node_modules/markdown-it`.
+Export runs locally without connecting to the portal or using secrets.
 
-## Android: реализовано
+## Android: features
 
-- добавление / редактирование / удаление нескольких пользователей;
-- все пользователи и последние сведения отображаются на одном экране;
-- `Обновить всех` и отдельная проверка выбранного пользователя;
-- логины, пароли и сохраненные сведения зашифрованы AES-256-GCM; ключ хранится в Android Keystore;
-- cookies WebView очищаются между учетными записями;
-- фоновая периодическая проверка через AndroidX WorkManager, а не постоянно работающий foreground service;
-- системное уведомление при изменении данных;
-- проверка выполняется только при наличии сети;
-- CAPTCHA/MFA не обходятся.
+- Add, edit, and delete multiple users.
+- View all users and their latest case details on one screen.
+- Refresh all users or check an individual user.
+- Logins, passwords, and stored details are encrypted with AES-256-GCM;
+  the key is held in Android Keystore.
+- WebView cookies are cleared between accounts.
+- Periodic background checks use AndroidX WorkManager rather than a
+  continuously running foreground service.
+- System notifications report changes in case data.
+- Checks run only when a network connection is available.
+- CAPTCHA and MFA are not bypassed.
 
-## Android: почему WorkManager
+## Android: why WorkManager
 
-Для Android 15+ постоянно работающий `dataSync` foreground service ограничен суммарно 6 часами за 24 часа. Для периодического мониторинга Android рекомендует WorkManager. В проекте используется периодическая работа примерно раз в 30 минут; Android может немного сдвигать фактическое время ради энергосбережения.
+On Android 15+, a `dataSync` foreground service is limited to a total of
+six hours per 24 hours. WorkManager is used for periodic monitoring instead.
+The default interval is approximately 30 minutes; actual timing may shift
+because of Android scheduling and power-saving policies.
 
-## Android: сборка
+## Android: build
 
 - Android Gradle Plugin: 8.13.2
 - Gradle: 8.13
@@ -71,43 +80,46 @@ XCTest не запускался; готового подписанного IPA 
 - WorkManager: 2.12.0
 - Java: 17
 
-В Android Studio откройте корень проекта и выполните `Build > Build APK(s)`.
+Open the repository root in Android Studio and select `Build > Build APK(s)`.
 
-Из CLI при установленном Android SDK/Gradle:
+From the command line, with Android SDK and Gradle installed:
 
 ```bash
 gradle :app:assembleDebug
 ```
 
-Результат:
+Output:
 
 `app/build/outputs/apk/debug/app-debug.apk`
 
-Сборка debug APK проверена 2 октября 2026 года в Docker-образе
-`ghcr.io/cirruslabs/android-sdk:36` на ARM64. Для x86-64 AAPT2 использовался
-`qemu-x86_64` с пакетами `libc6-amd64-cross` и `libstdc++6-amd64-cross` внутри
-контейнера. Обёртка должна называться `aapt2` и передаваться через
-`-Pandroid.aapt2FromMavenOverride=/usr/local/bin/aapt2`. Подпись APK проверена
-через `apksigner verify`; проверка работы на телефоне ещё не выполнялась.
+The debug APK build was verified on October 2, 2026, using the
+`ghcr.io/cirruslabs/android-sdk:36` Docker image on ARM64. The x86-64 AAPT2
+binary ran through `qemu-x86_64`, with `libc6-amd64-cross` and
+`libstdc++6-amd64-cross` installed inside the container. The wrapper must
+be named `aapt2` and supplied using
+`-Pandroid.aapt2FromMavenOverride=/usr/local/bin/aapt2`.
+The APK signature was checked with `apksigner verify`; this verification
+did not include running the application on a physical phone.
 
-## Android: проверка входа и данных
+## Android: login and data checks
 
-2 октября 2026 года адаптер `app/src/main/assets/portal_adapter.js` проверен
-на действующем портале через локальный Chromium: вход успешен, получены
-6 непустых полей. Также прошли 12 браузерных проверок HTML/Vaadin,
-ожидания загрузки, отказа входа, MFA и извлечения полей из Shadow DOM.
-Это проверка адаптера в Chromium, а не запуск Android WebView на телефоне.
+On October 2, 2026, `app/src/main/assets/portal_adapter.js` was tested
+against the live portal using local Chromium: login succeeded and six
+non-empty fields were retrieved. Twelve browser checks also passed for
+HTML/Vaadin, loading waits, rejected login, MFA, and Shadow DOM extraction.
+These are Chromium adapter checks, not Android WebView tests on a phone.
 
-Для локального теста используется `tools/test_portal_login.py`
-(Chromium, Python и `websocket-client`). Тест читает
-`.secrets/portal-test.env`, отправляет данные только при HTTPS-адресе
-`klient.gdansk.uw.gov.pl` и выводит лишь этапы и количество полей.
-Временный профиль браузера удаляется после теста. Каталог `.secrets/`
-исключён из Git; не включайте его в архивы для публикации.
+Local login testing uses `tools/test_portal_login.py` with Chromium,
+Python, and `websocket-client`. The test reads `.secrets/portal-test.env`,
+sends credentials only to the HTTPS host `klient.gdansk.uw.gov.pl`, and
+prints only processing stages and field counts. The temporary browser
+profile is deleted after testing. The `.secrets/` directory is excluded
+from Git; do not include it in published archives.
 
-## История изменений
+## Changelog
 
-Версии Android и подготовка iOS описаны в [CHANGELOG.md](CHANGELOG.md).
+Android release history and iOS project preparation are documented in
+[CHANGELOG.md](CHANGELOG.md) (currently in Russian).
 
-Проекты других платформ вынесены в соседнюю папку
-[gdansk_case_monitor_apps](../gdansk_case_monitor_apps/README.md).
+Other platform projects are stored separately in the local sibling folder
+`../gdansk_case_monitor_apps/`; they are not included in this repository.
