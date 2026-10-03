@@ -1,6 +1,6 @@
 # Gdańsk Case Monitor
 
-[English](README.md) · [Русский](README_RU.md)
+[English](README.md) · [Русский](README_RU.md) · [Polski](README_PL.md)
 
 An application for checking case status for multiple accounts on
 `https://klient.gdansk.uw.gov.pl/`.
