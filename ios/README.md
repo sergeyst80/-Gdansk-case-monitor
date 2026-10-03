@@ -34,9 +34,76 @@
 
 ## Сборка на Mac
 
-Потребуются Xcode с поддержкой iOS 17+, CocoaPods и доступ к интернету
-для установки официальной зависимости Google. Рекомендуется актуальный
-Xcode на Mac с Apple Silicon.
+### Необходимые инструменты
+
+| Инструмент | Для чего нужен |
+| --- | --- |
+| Mac с macOS, совместимой с выбранным Xcode | Полная сборка iOS; Linux и Windows не заменяют macOS с iOS SDK. Apple Silicon рекомендуется, но сам по себе не является требованием проекта. |
+| Полный Xcode с iOS SDK | Swift-компилятор, редактор проекта, `xcodebuild`, подпись и Organizer. Одного пакета Command Line Tools недостаточно. |
+| iOS Simulator и установленный runtime iOS 17 или новее | Запуск и тесты без физического iPhone; runtime установите через настройки Xcode. |
+| Git | Клонирование и обновление репозитория. |
+| CocoaPods (`pod`) | Установка зависимости `GoogleMLKit/Translate` версии `8.0.0`, указанной в Podfile, и создание `.xcworkspace`. |
+| Python 3 (`python3`) | Структурные проверки `tools/validate_project.py`; не требуется самому приложению. |
+| Terminal и Bash | Запуск команд и `tools/build_macos.sh`. |
+| Интернет | Загрузка Xcode, runtime и Pods; подключение к порталу при проверке приложения. |
+
+Выберите Xcode с поддержкой iOS 17+ и версии iOS вашего тестового устройства.
+Совместимые версии macOS, SDK и устройств проверяйте по
+[таблице Apple](https://developer.apple.com/xcode/system-requirements/).
+Конкретная версия Xcode для этого проекта пока не подтверждена сборкой.
+Swift и XCTest входят в Xcode: отдельно устанавливать их не нужно.
+Android SDK, Java, Gradle и Android-ключ подписи для этой сборки не нужны.
+
+### Установка и проверка инструментов
+
+1. Установите полный [Xcode](https://developer.apple.com/xcode/), откройте его,
+   примите лицензию и дождитесь установки дополнительных компонентов.
+2. Установите iOS Simulator runtime в настройках Xcode. В зависимости от
+   версии Xcode раздел называется Platforms или Components.
+3. Если установлен [Homebrew](https://brew.sh/), установите дополнительные
+   инструменты следующей командой. Homebrew — удобный, но необязательный
+   способ установки; альтернативный способ CocoaPods описан в
+   [официальном руководстве](https://guides.cocoapods.org/using/getting-started.html).
+
+   ```bash
+   brew install cocoapods python
+   ```
+
+4. Проверьте окружение:
+
+   ```bash
+   xcode-select -p
+   xcodebuild -version
+   xcrun --sdk iphoneos --show-sdk-version
+   xcrun simctl list devices available
+   git --version
+   pod --version
+   python3 --version
+   ```
+
+   Если `xcode-select -p` показывает `/Library/Developer/CommandLineTools`
+   вместо полного Xcode, выберите установленный Xcode. Команда ниже подходит
+   для стандартного расположения; при другом пути измените его:
+
+   ```bash
+   sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+   ```
+
+### Учётная запись и физический iPhone
+
+- Для сборки и тестов в симуляторе подпись и платная подписка Apple Developer
+  Program не требуются.
+- Для запуска на собственном iPhone нужны Apple Account в Xcode, команда
+  подписи, iPhone с iOS 17+, сопряжение с Mac и включённый Developer Mode.
+  Для первого подключения удобно использовать USB-кабель.
+- Бесплатная Personal Team позволяет тестировать на своих устройствах,
+  но имеет ограничения подписи и возможностей. Для TestFlight, App Store
+  и распространения через Ad Hoc требуется Apple Developer Program.
+  Различия описаны в [руководстве Apple](https://developer.apple.com/support/compare-memberships/).
+- Секреты подписи храните локально в Xcode/Keychain. Не добавляйте пароли,
+  приватные ключи или provisioning profiles в репозиторий.
+
+### Открытие проекта и сборка
 
 1. Клонируйте репозиторий на Mac и перейдите в `ios/`. Не копируйте
    `.secrets` Android-проекта: они не нужны для iOS.
